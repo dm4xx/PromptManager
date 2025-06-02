@@ -1,0 +1,63 @@
+```mermaid
+graph TD
+    subgraph UI Layer
+        MW[MainWindow]
+        PE[PromptEditor]
+        HP[HistoryPanel]
+    end
+    
+    subgraph Data Layer
+        DB[Sled Database]
+        PM[PromptModel]
+        HM[HistoryModel]
+    end
+    
+    subgraph Business Logic
+        BL[Business Logic Layer]
+        PS[PromptService]
+        HS[HistoryService]
+    end
+
+    MW --> PE
+    MW --> HP
+    PE --> BL
+    HP --> BL
+    BL --> PS
+    BL --> HS
+    PS --> DB
+    HS --> DB
+    PS --> PM
+    HS --> HM
+
+    classDef ui fill:#f9f,stroke:#333,stroke-width:2px
+    classDef data fill:#bbf,stroke:#333,stroke-width:2px
+    classDef logic fill:#bfb,stroke:#333,stroke-width:2px
+    
+    class MW,PE,HP ui
+    class DB,PM,HM data
+    class BL,PS,HS logic
+```
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant MW as MainWindow
+    participant PE as PromptEditor
+    participant PS as PromptService
+    participant DB as Sled Database
+    
+    U->>MW: Open application
+    MW->>PE: Initialize PromptEditor
+    PE->>PS: Request initial prompts
+    PS->>DB: Query prompts
+    DB-->>PS: Return prompts
+    PS-->>PE: Update prompts
+    PE->>MW: Render UI
+    
+    Note over U,MW: User interaction
+    U->>PE: Edit prompt
+    PE->>PS: Save prompt
+    PS->>DB: Store prompt
+    DB-->>PS: Confirm
+    PS-->>PE: Update UI
+```

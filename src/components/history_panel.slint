@@ -1,0 +1,46 @@
+// History Panel Component
+import { LineEdit, Button, ListView } from "std-widgets.slint";
+
+export component HistoryPanel inherits Window {
+    in property <[{id: string, prompt: string, level: int, has_children: bool, is_expanded: bool}]> items: [];
+    
+    //callback on-branch(string);
+    //callback on-node-selected(string);
+    callback on-expand-node(string);
+    in-out property <string> search-text: "";
+    in-out property <string> selected-node: "";
+    
+    VerticalLayout {
+        LineEdit {
+            preferred-width: 180px;
+    
+            placeholder-text: "Find node by text...";
+            text <=> search-text;
+        }
+        
+        ListView {
+            for data[i] in items: Rectangle {
+                width: parent.width;
+                height: 30px;
+                padding-left: data.level * 20px;
+                
+                HorizontalLayout {
+                    Button {
+                        width: 20px;
+                        height: 20px;
+                        visible: data.has_children;
+                        text: data.is_expanded ? "▼" : "▶";
+                        clicked => {
+                            root.on-expand-node(data.id);
+                        }
+                    }
+                    
+                    Text {
+                        text: data.prompt;
+                        color: data.is_expanded ? Colors.blue : Colors.black;
+                    }
+                }
+            }
+        }
+    }
+}

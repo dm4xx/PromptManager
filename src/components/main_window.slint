@@ -1,0 +1,92 @@
+// Main Window Component
+import { GridBox, Button, ComboBox } from "std-widgets.slint";
+import { HistoryPanel } from "history_panel.slint";
+import { PromptEditor } from "prompt_editor.slint";
+
+export component MainWindow inherits Window {
+    in property <[{id: string, prompt: string, level: int, has_children: bool, is_expanded: bool}]> history_items: [];
+    in-out property <bool> fullscreen: false;
+    in-out property <bool> history-visible: false;
+    
+    callback on-font-size-changed(string);
+    callback on-toggle-fullscreen();
+    callback on-expand-node(string);
+
+    title: "Xander's Prompt Manager";
+    min-width: 400px;
+    min-height: 300px;
+    
+
+    VerticalLayout {        
+        
+        padding: 20px;
+        width: parent.width;
+        height: parent.height;
+
+        HorizontalLayout {
+            vertical-stretch: 0;
+            spacing: 5px;
+            width: parent.width;
+
+            Button {
+                width: 120px;
+                height: 30px;
+                text: "Toggle History";
+                clicked => { 
+                    root.history-visible = !root.history-visible;
+                }
+            }
+            Button {
+                width: 80px;
+                height: 30px;
+                text: "Fullscreen";
+                clicked => { 
+                    on-toggle-fullscreen(); 
+                }
+            }
+            
+            ComboBox {
+                width: 80px;
+                height: 30px;
+                model : ["8pt", "10pt", "12pt", "14pt", "16pt"];
+                selected(value) => {
+                    on-font-size-changed(value);
+                }
+            }
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            width: parent.width;
+            height: root.history-visible ? parent.height * 0.4 : 0px;
+            background: Colors.aquamarine;
+            visible: history-visible;
+            HistoryPanel {
+                width: parent.width;
+                height: parent.height;
+                items: root.history_items;
+                on-expand-node(id) => {
+                    root.on-expand-node(id);
+                }
+            }
+        }
+
+        PromptEditor {
+            vertical-stretch: 2;
+            width: parent.width;
+            height: root.history-visible ? parent.height * 0.6 : parent.height - 70px;
+            on-submit => {
+                // Handle submit
+            }
+            on-accept => {
+                // Handle accept
+            }
+            on-copy => {
+                // Handle copy
+            }
+            on-edit => {
+                // Handle edit
+            }
+        }
+    }
+}

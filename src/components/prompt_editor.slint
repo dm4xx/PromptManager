@@ -1,0 +1,119 @@
+// Prompt Editor Component
+import {  LineEdit, TextEdit, Button, ComboBox } from "std-widgets.slint";
+
+export component PromptEditor inherits Window {
+    in-out property <string> prompt-text: "";
+    in-out property <int> max-length: 750;
+    in-out property <string> ai-service: "ChatGPT";
+    in-out property <string> answer-text: "";
+    in-out property <string> log_line: "All good!";
+    property <bool> prompt_read_only: false;
+
+    
+    callback on-submit();
+    callback on-accept();
+    callback on-copy();
+    callback on-edit();
+    
+    min-height: 300px;
+    
+    VerticalLayout {
+
+
+        CurrentPrompt := HorizontalLayout {
+            vertical-stretch: 1;
+            height: parent.height - 60px;  // Subtract height of buttons and logger
+            spacing: 30px;
+
+            Rectangle {
+                horizontal-stretch: 35;
+                height: parent.height;
+                
+
+                HorizontalLayout {
+                    height: parent.height;
+                    VerticalLayout {
+                        height: parent.height;
+                        horizontal-stretch: 1;
+                        TextEdit {
+                            text <=> prompt-text;
+                            wrap: word-wrap;
+                            read-only <=> prompt_read_only;
+                            placeholder-text: "Enter your prompt here...";
+                        }
+
+                        Text {
+                            text: prompt-text.character-count + "/" + root.max-length;
+                        }
+                    }
+                    
+                    VerticalLayout {
+                        horizontal-stretch: 0;
+                        ComboBox {
+                            width: 80px;
+                            height: 30px;
+                            model: ["ChatGPT", "Gemini", "NotebookLM", "Perplexity"];
+                            selected(value) => {
+                                ai-service = value;
+                            }
+                        }
+                        Button {
+                            width: 80px;
+                            height: 30px;
+                            text: "Copy";
+                            clicked => { 
+                                on-copy(); 
+                            }      
+                        }
+                        Button {
+                            width: 80px;
+                            height: 30px;
+                            text: "Submit";
+                            clicked => { 
+                                prompt_read_only = true; 
+                            }
+                        }
+                    }
+                }                
+            }
+           
+
+            TextEdit {
+                horizontal-stretch: 65;
+                height: parent.height;
+                text <=> answer-text;
+                placeholder-text: "Paste AI response here...";
+                wrap: word-wrap;
+                read-only: false;
+            }
+
+           
+        }
+
+        
+        
+        
+        HorizontalLayout {
+            Button {
+                height: 30px;
+                text: "Edit";
+                clicked => {
+                    on-edit();
+                }
+            }
+            Button {
+                height: 30px;
+                text: "Accept";
+                clicked => {
+                    prompt_read_only = false;
+                }
+            }
+
+        }
+         Logger := Text {
+            height: 30px;
+            text <=> log_line;
+         }
+    }
+    
+}
